@@ -15,7 +15,7 @@ Selain suorittaa skriptin main.js,
 joka tekee AJAX-pyynnön.
 end note
 
-selain->palvelin: HTTP GET selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
 palvelin->selain: HTTP 200, JSON-data
 
 note over selain:
@@ -41,7 +41,7 @@ Selain suorittaa skriptin spa.js,
 joka tekee AJAX-pyynnön.
 end note
 
-selain->palvelin: HTTP GET selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
 palvelin->selain: HTTP 200, JSON-data
 
 note over selain:
