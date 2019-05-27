@@ -1,0 +1,64 @@
+title Tehtävä 0.4: Uusi muistiinpano
+
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note
+palvelin->selain: HTTP 302
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/notes
+palvelin->selain: HTTP 200, HTML-koodi
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin->selain: HTTP 200, main.css
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.js
+palvelin->selain: HTTP 200, main.js
+
+note over selain:
+Selain suorittaa skriptin main.js,
+joka tekee AJAX-pyynnön.
+end note
+
+selain->palvelin: HTTP GET selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin->selain: HTTP 200, JSON-data
+
+note over selain:
+Main.js suorittaa AJAX-pyynnön tapahtumankäsittelijän,
+joka parsii JSON-datan, tulostaa sen selaimen konsoliin
+ja tulostaa muintiinpanot ruudulle.
+end note
+
+---
+
+title Tehtävä 0.5: Single page app
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa
+palvelin->selain: HTTP 200, HTML-koodi
+
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/main.css
+palvelin->selain: HTTP 200, main.css
+selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/spa.js
+palvelin->selain: HTTP 200, spa.js
+
+note over selain:
+Selain suorittaa skriptin spa.js,
+joka tekee AJAX-pyynnön.
+end note
+
+selain->palvelin: HTTP GET selain->palvelin: HTTP GET https://fullstack-exampleapp.herokuapp.com/data.json
+palvelin->selain: HTTP 200, JSON-data
+
+note over selain:
+Spa.js suorittaa AJAX-pyynnön tapahtumankäsittelijän,
+joka kutsuu redrawNotes-funktiota, joka taas huolehtii
+datan tulostamisesta ruudulle.
+end note
+
+---
+
+title Tehtävä 0.6: Uusi muistiinpano
+
+note over selain:
+Selain suorittaa napin onsubmit-tapahtumankäsittelijän,
+joka tulostaa uuden muistiinpanon ruudulle
+ja tekee AJAX-pyynnön:
+end note
+
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+palvelin->selain: HTTP 201
