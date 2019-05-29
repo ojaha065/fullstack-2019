@@ -17,13 +17,7 @@ const App = (props) => {
     const max = votes.reduce((a,b) => {
         return Math.max(a,b);
     });
-    let mostVotes;
-    for(let i = 0;i < votes.length;i++){
-        if(votes[i] === max){
-            mostVotes = i;
-            break;
-        }
-    }
+    const mostVotes = votes.indexOf(max);
 
     return (
         <div>
@@ -36,8 +30,6 @@ const App = (props) => {
             <h2>Anecdote with the most votes</h2>
             {props.anecdotes[mostVotes]}
             <p>has {max} votes</p>
-
-
         </div>
     );
 };
