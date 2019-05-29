@@ -7,12 +7,16 @@ const Statistics = (props) => {
     if(palautteitaYhteensa > 0){
         return (
             <div>
-                <Statistic text="Hyvä" value={props.palautteet[0]} />
-                <Statistic text="Neutraali" value={props.palautteet[1]} />
-                <Statistic text="Huono" value={props.palautteet[2]} />
-                <Statistic text="Palautteita yhteensä" value={palautteitaYhteensa} />
-                <Statistic text="Keskiarvo" value={(props.palautteet[0] - props.palautteet[2]) / palautteitaYhteensa} />
-                <Statistic text="Positiivisia palautteita" value={props.palautteet[0] * 100 / palautteitaYhteensa} />
+                <table>
+                    <tbody>
+                        <Statistic text="Hyvä" value={props.palautteet[0]} />
+                        <Statistic text="Neutraali" value={props.palautteet[1]} />
+                        <Statistic text="Huono" value={props.palautteet[2]} />
+                        <Statistic text="Palautteita yhteensä" value={palautteitaYhteensa} />
+                        <Statistic text="Keskiarvo" value={(props.palautteet[0] - props.palautteet[2]) / palautteitaYhteensa} />
+                        <Statistic text="Positiivisia palautteita" value={`${props.palautteet[0] * 100 / palautteitaYhteensa} %`} />
+                    </tbody>
+                </table>
             </div>
         );
     }
@@ -21,7 +25,12 @@ const Statistics = (props) => {
     }
 };
 const Statistic = (props) => {
-    return (<p>{props.text} {props.value}</p>);
+    return (
+        <tr>
+            <td>{props.text}</td>
+            <td>{props.value}</td>
+        </tr>
+    );
 };
 
 const Button = (props) => {
