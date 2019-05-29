@@ -7,20 +7,25 @@ const Statistics = (props) => {
     if(palautteitaYhteensa > 0){
         return (
             <div>
-                <p>Hyvä {props.palautteet[0]}</p>
-                <p>Neutraali {props.palautteet[1]}</p>
-                <p>Huono {props.palautteet[2]}</p>
-                <br />
-                <p>Palautteita yhteensä {palautteitaYhteensa}</p>
-    
-                <p>Keskiarvo {(props.palautteet[0] - props.palautteet[2]) / palautteitaYhteensa}</p>
-                <p>Positiivisia palautteita {props.palautteet[0] * 100 / palautteitaYhteensa} %</p>
+                <Statistic text="Hyvä" value={props.palautteet[0]} />
+                <Statistic text="Neutraali" value={props.palautteet[1]} />
+                <Statistic text="Huono" value={props.palautteet[2]} />
+                <Statistic text="Palautteita yhteensä" value={palautteitaYhteensa} />
+                <Statistic text="Keskiarvo" value={(props.palautteet[0] - props.palautteet[2]) / palautteitaYhteensa} />
+                <Statistic text="Positiivisia palautteita" value={props.palautteet[0] * 100 / palautteitaYhteensa} />
             </div>
         );
     }
     else{
         return (<p>Yhtään palautetta ei ole annettu.</p>);
     }
+};
+const Statistic = (props) => {
+    return (<p>{props.text} {props.value}</p>);
+};
+
+const Button = (props) => {
+    return (<button type="button" onClick={props.handleClick}>{props.text}</button>);
 };
 
 const App = () => {
@@ -32,9 +37,9 @@ const App = () => {
         <div>
             <h1>Unicafe asiakaspalaute</h1>
 
-            <button type="button" onClick={() => setGood(good + 1)}>Hyvä</button>
-            <button type="button" onClick={() => setNeutral(neutral + 1)}>Neutraali</button>
-            <button type="button" onClick={() => setBad(bad + 1)}>Huono</button>
+            <Button handleClick={() => setGood(good + 1)} text="Hyvä" />
+            <Button handleClick={() => setNeutral(neutral + 1)} text="Neutraali" />
+            <Button handleClick={() => setBad(bad + 1)} text="Huono" />
 
             <h2>Tilastot</h2>
             <Statistics palautteet={[good,neutral,bad]} />
