@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 
+import Weather from "./components/Weather";
+
 const SearchResults = (props) => {
     const showCountry = (country) => {
-        // Tämä ei varmaan ole oikea tapa toteuttaa tämä, mutta toimii...
+        // Tämä ei varmaankaan ole oikea tapa toteuttaa tämä, mutta toimii...
         document.getElementById("search").value = country;
         props.inputChangeHandler();
     };
@@ -16,7 +18,7 @@ const SearchResults = (props) => {
             return (<p>Too many matches, please specify another filter</p>);
         case 2:
             const rows = props.showCountries.map((country) => {
-                return (<li key={`country.cioc${Math.random()}`}>{country.name} <button id={country.name} type="button" onClick={(e) => showCountry(e.target.id)}>show</button></li>);
+                return (<li key={`${country.cioc}${Math.random()}`}>{country.name} <button id={country.name} type="button" onClick={(e) => showCountry(e.target.id)}>show</button></li>);
             });
             return (
                 <div>
@@ -37,11 +39,12 @@ const SearchResults = (props) => {
                     <h2>Languages</h2>
                     <ul>{languages}</ul>
                     <img src={props.showCountries[0].flag} width="200" alt="Flag of the country" />
+                    <Weather city={props.showCountries[0].capital} />
                 </div>
             );
         default:
             console.error("Jokin meni nyt pieleen!");
-            return;
+            return (<div></div>);
     }
 };
 

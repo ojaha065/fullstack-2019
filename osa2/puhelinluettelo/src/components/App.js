@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Axios from "axios";
 
 import Filter from "./Filter";
 import PersonForm from "./PersonForm";
 import Persons from "./Persons";
+
+import phonebookService from "../phonebookService"
 
 const App = () => {
     // Tilat
@@ -16,9 +17,8 @@ const App = () => {
 
     // Alkutilan hakeminen
     useEffect(() => {
-        Axios.get("http://localhost:8000/persons").then((response) => {
+        phonebookService.getAll().then((response) => {
             // OK
-            //console.log(response);
             setPersons(response.data);
         }).catch((error) => {
             // Virhe
