@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
 
-const Tulostus = (props) => {
+const SearchResults = (props) => {
     const showCountry = (country) => {
+        // Tämä ei varmaan ole oikea tapa toteuttaa tämä, mutta toimii...
         document.getElementById("search").value = country;
+        props.inputChangeHandler();
     };
 
     switch(props.tila){
@@ -14,7 +16,7 @@ const Tulostus = (props) => {
             return (<p>Too many matches, please specify another filter</p>);
         case 2:
             const rows = props.showCountries.map((country) => {
-                return (<li key={country.cioc}>{country.name} <button id={country.name} type="button" onClick={(e) => showCountry(e.target.id)}>show</button></li>);
+                return (<li key={`country.cioc${Math.random()}`}>{country.name} <button id={country.name} type="button" onClick={(e) => showCountry(e.target.id)}>show</button></li>);
             });
             return (
                 <div>
@@ -65,7 +67,7 @@ const App = () => {
         //console.log(e.target.value);
         // Filteröidään maat-listaa
         let filteredCountries = maat.filter((maa) => {
-            return maa.name.toLowerCase().includes(e.target.value.toLowerCase());
+            return maa.name.toLowerCase().includes(e ? e.target.value.toLowerCase() : document.getElementById("search").value.toLowerCase());
         });
         //console.log(filteredCountries);
         if(filteredCountries.length > 10){
@@ -89,7 +91,7 @@ const App = () => {
             find countries
             <input id="search" type="text" onChange={inputChangeHandler} />
             <br />
-            <Tulostus tila={tila} showCountries={showCountries} />
+            <SearchResults tila={tila} showCountries={showCountries} inputChangeHandler={inputChangeHandler} />
         </div>
     );
 };
