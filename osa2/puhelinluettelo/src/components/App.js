@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Axios from "axios";
 
 import Filter from "./Filter";
 import PersonForm from "./PersonForm";
@@ -6,21 +7,24 @@ import Persons from "./Persons";
 
 const App = () => {
     // Tilat
-    const [persons,setPersons] = useState([
-        {
-            name: "Jani Haiko",
-            phone: "0445551234"
-        },
-        {
-            name: "Matti Meikäläinen",
-            phone: "+358 45 555 4321"
-        }
-    ]);
+    const [persons,setPersons] = useState([]);
     const [newPerson,setNewPerson] = useState({
         name: null,
         phone: null
     });
     const [filter,setFilter] = useState(null);
+
+    // Alkutilan hakeminen
+    useEffect(() => {
+        Axios.get("http://localhost:8000/persons").then((response) => {
+            // OK
+            //console.log(response);
+            setPersons(response.data);
+        }).catch((error) => {
+            // Virhe
+            throw error;
+        });
+    },[]);
 
     const handleInputChange = (e) => {
         // Minusta on fiksumpaa, että on vain yksi muutoksenkäsittelijä input-kentille
@@ -28,13 +32,13 @@ const App = () => {
             case "name":
                 setNewPerson({
                     name: e.target.value,
-                    phone: newPerson.phone
+                    number: newPerson.number
                 });
                 break;
-            case "phone":
+            case "number":
                 setNewPerson({
                     name: newPerson.name,
-                    phone: e.target.value
+                    number: e.target.value
                 });
                 break;
             case "filter":
@@ -47,11 +51,11 @@ const App = () => {
     const addNumber = (e) => {
         e.preventDefault();
 
-        if(!persons.some(person => person.phone === newPerson.phone)){
+        if(!persons.some(person => person.number === newPerson.number)){
             setPersons(persons.concat(newPerson));
         }
         else{
-            alert(`Number ${newPerson.phone} is already added to the phonebook!`);
+            alert(`Number ${newPerson.number} is already added to the phonebook!`);
         }
         //console.log(persons);
     };
