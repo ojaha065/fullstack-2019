@@ -94,5 +94,4 @@ const App = () => {
     );
 };
 
-let moi = ReactDOM.render(<App />,document.getElementById("root"));
-console.log(moi);
+ReactDOM.render(<App />,document.getElementById("root"));
