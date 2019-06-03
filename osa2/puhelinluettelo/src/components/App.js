@@ -51,13 +51,58 @@ const App = () => {
     const addNumber = (e) => {
         e.preventDefault();
 
-        if(!persons.some(person => person.number === newPerson.number)){
-            setPersons(persons.concat(newPerson));
+        if(!persons.some(person => person.name === newPerson.name)){
+            //setPersons(persons.concat(newPerson));
+            phonebookService.saveNewPerson(newPerson).then((response) => {
+                // OK
+                //console.log(response);
+                if(response.status === 201){
+                    phonebookService.getAll().then((response) => {
+                        // OK
+                        setPersons(response.data);
+                    });
+                }
+                else{
+                    alert(`Failed! Response status was ${response.status}`);
+                }
+            }).catch((error) => {
+                // Virhe
+                console.error(error);
+                alert("Failed!");
+            });
         }
-        else{
-            alert(`Number ${newPerson.number} is already added to the phonebook!`);
+        else if(window.confirm("That person is already on the list. Do you want to replace the old number with the new one?")){
+            const id = persons.find((person) => {
+                return person.name === newPerson.name;
+            }).id;
+            phonebookService.replacePerson(id,newPerson).then(() => {
+                let copy = [...persons];
+                const selected_index = copy.findIndex((person) => {
+                    return person.id === id;
+                });
+                copy[selected_index] = newPerson;
+            }).catch((error) => {
+                console.error(error);
+                alert("Failed!");
+            });
         }
         //console.log(persons);
+    };
+    const removeNumber = (id) => {
+        // Haetaan tämän henkilön sijainti taulukossa
+        const selected_index = persons.findIndex((person) => {
+            return person.id === id;
+        });
+
+        if(window.confirm(`Are you sure? ${persons[selected_index].name} might get upset...`)){
+            phonebookService.deletePerson(id).then(() => {
+                let copy = [...persons];
+                copy.splice(selected_index,1); // Poistetaan olio myös paikallisesta kopiosta
+                setPersons(copy);
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
     };
 
     return (
@@ -69,7 +114,7 @@ const App = () => {
              
             <h2>Numbers</h2>
             <Filter handleInputChange={handleInputChange} />
-            <Persons persons={persons} filter={filter} />
+            <Persons persons={persons} filter={filter} removeNumber={removeNumber} />
         </div>
     );
 };
