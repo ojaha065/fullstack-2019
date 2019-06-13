@@ -75,7 +75,7 @@ const App = () => {
                 // OK
                 //console.log(response);
                 if(response.status === 201){
-                    // Haetaan kaikki uudelleen palvelimelta, jotta saadaan varmasti oikeat id:t
+                    // Haetaan kaikki uudelleen palvelimelta, jotta saadaan oikeat id:t
                     phonebookService.getAll().then((response) => {
                         // OK
                         setPersons(response.data);
@@ -91,7 +91,7 @@ const App = () => {
                 showNotification(`Failed to add ${newPerson.name}. Error code ${error.status}`,5,"failure");
             });
         }
-        /*else if(window.confirm("That person is already on the list. Do you want to replace the old number with the new one?")){
+        else if(window.confirm("That person is already on the list. Do you want to replace the old number with the new one?")){
             const id = persons.find((person) => {
                 return person.name === newPerson.name;
             }).id;
@@ -109,7 +109,7 @@ const App = () => {
                 console.error(error);
                 showNotification(`Failed to modify ${newPerson.name}`,5,"failure");
             });
-        }*/
+        }
         //console.log(persons);
     };
     const removeNumber = (id) => {

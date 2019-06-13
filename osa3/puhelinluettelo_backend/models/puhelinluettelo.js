@@ -15,8 +15,14 @@ mongoose.connect(connectionString,{
 
 const PersonSchema = new mongoose.Schema({
     name: String,
-    number: String,
-    id: Number
+    number: String
+});
+PersonSchema.set("toJSON",{
+    transform: (document,returnedObject) => {
+        returnedObject.id = returnedObject._id;
+        delete returnedObject._id;
+        delete returnedObject.__v;
+    }
 });
 const Person = mongoose.model("Person",PersonSchema);
 
@@ -27,14 +33,21 @@ module.exports = {
     saveNew: (newName,newNumber) => {
         const person = new Person({
             name: newName,
-            number: newNumber,
-            id: Math.floor(Math.random() * 999999)
+            number: newNumber
         });
         return person.save();
     },
-    getPerson : (id) => {
-        return Person.find({
-            id: id
-        })
+    getPerson: (id) => {
+        return Person.findById(id);
+    },
+    removePerson: (id) => {
+        return Person.findByIdAndRemove(id,{
+            useFindAndModify: false
+        });
+    },
+    modifyPerson: (id,newNumber) => {
+        return Person.findByIdAndUpdate(id,{
+            number: newNumber
+        });
     }
 };

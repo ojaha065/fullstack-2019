@@ -13,8 +13,11 @@ const puhelinluettelo = require("./models/puhelinluettelo.js");
 
 const app = express();
 
+// ### Middlewaret ###
+
 app.use(express.static("./public"));
 
+// Body-parser
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -31,55 +34,37 @@ morgan.token("body",(req,res) => {
 });
 app.use(morgan(":method :url :status :response-time ms :body"));
 
-// Routes
-app.get(["/","/api"],(req,res) => {
+// ### Reitit ###
+app.get("/api",(req,res) => {
     res.status(200).send("Nothing to see here!");
 });
 
-app.get("/api/persons",(req,res) => {
+app.get("/api/persons",(req,res,next) => {
     puhelinluettelo.getAll().then((result) => {
         // OK
         res.status(200).json(result);
-    }).catch((error) => {
-        // Virhe
-        console.error(error);
-        res.status(503).send();
-    });
+    }).catch(error => next(error));
 });
-app.get("/api/persons/:id",(req,res) => {
+app.get("/api/persons/:id",(req,res,next) => {
     puhelinluettelo.getPerson(req.params.id).then((result) => {
-        if(result.length > 0){
-            res.status(200).json(result);
-        }
-        else{
-            res.status(404).send();
-        }
-    }).catch((error) => {
-        res.status(500).send();
-    });
+        res.status(200).json(result);
+    }).catch(error => next(error));
 });
 
-app.get("/info",(req,res) => {
+app.get("/info",(req,res,next) => {
     puhelinluettelo.getAll().then((result) => {
         // OK
         res.status(200).send(`Phonebook has info for ${result.length} people.<br />${new Date().toString()}`);
-    }).catch((error) => {
-        // Virhe
-        console.error(error);
-        res.status(503).send();
-    });
+    }).catch(error => next(error));
 });
 
 // Numeron lisääminen
-app.post("/api/persons",(req,res) => {
+app.post("/api/persons",(req,res,next) => {
     if(req.body.name && req.body.number){
         puhelinluettelo.saveNew(req.body.name,req.body.number).then((response) => {
             // OK
             res.status(201).send();
-        }).catch((error) => {
-            console.error(error);
-            res.status(500).send();
-        });
+        }).catch(error => next(error));
     }
     else{
         res.status(400).json({
@@ -89,18 +74,51 @@ app.post("/api/persons",(req,res) => {
 });
 
 // Numeron poistaminen
-app.delete("/api/persons/:id",(req,res) => {
-    const selected_index = persons.findIndex((person) => {
-        return person.id === Number(req.params.id);
-    });
-    if(selected_index !== -1){
-        persons.splice(selected_index,1);
-        res.status(205).send();
+app.delete("/api/persons/:id",(req,res,next) => {
+    puhelinluettelo.removePerson(req.params.id).then((response) => {
+        // OK
+        // Poistettiinko oikeasti mitään?
+        if(response){
+            res.status(205).send();
+        }
+        else{
+            res.status(404).send();
+        }
+    }).catch(error => next(error));
+});
+
+// Numeron muokkaaminen
+app.put("/api/persons/:id",(req,res,next) => {
+    if(req.params.id && req.body.number){
+        puhelinluettelo.modifyPerson(req.params.id,req.body.number).then((response) => {
+            // OK
+            // Muokattiinko oikeasti mitään?
+            if(response){
+                res.status(205).send();
+            }
+            else{
+                res.status(404).send();
+            }
+        }).catch(error => next(error));
     }
     else{
-        res.status(404).send();
+        res.status(400).json({
+            error: "Required parameter missing"
+        });
     }
 });
+
+// ### Middlewaret ###
+// 404
+app.use((req,res) => {
+    res.status(404).send("Page not found");
+});
+
+// Virheenkäsittelijä
+app.use((error,req,res,next) => {
+    console.error(error);
+    res.status(500).send();
+})
 
 // Käynnistetään palvelin
 const port = process.env.PORT || 8000;

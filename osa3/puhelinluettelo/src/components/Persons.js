@@ -10,7 +10,7 @@ const Persons = (props) => {
     }
 
     const rows = filtered.map((person) => {
-        return (<li key={person.name}>{person.name} {person.number} <button id={person.id} type="button" onClick={(e) => props.removeNumber(Number(e.target.id))}>remove</button></li>);
+        return (<li key={person.id}>{person.name} {person.number} <button data-id={person.id} type="button" onClick={(e) => props.removeNumber(e.target.getAttribute("data-id"))}>remove</button></li>);
     });
 
     return (
