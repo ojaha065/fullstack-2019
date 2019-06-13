@@ -1,31 +1,15 @@
 "use strict";
 
+if(!process.env.MONGOPWD){
+    require("dotenv").config();
+}
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 
-const persons = [
-    {
-        name: "Arto Hellas",
-        number: "040-123456",
-        id: 1
-    },
-    {
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-        id: 2
-    },
-    {
-        name: "Dan Abramov",
-        number: "12-43-234345",
-        id: 3
-    },
-    {
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-        id: 4
-    }
-];
+// Omat tietomallit
+const puhelinluettelo = require("./models/puhelinluettelo.js");
 
 const app = express();
 
@@ -53,40 +37,49 @@ app.get(["/","/api"],(req,res) => {
 });
 
 app.get("/api/persons",(req,res) => {
-    res.status(200).json(persons);
+    puhelinluettelo.getAll().then((result) => {
+        // OK
+        res.status(200).json(result);
+    }).catch((error) => {
+        // Virhe
+        console.error(error);
+        res.status(503).send();
+    });
 });
 app.get("/api/persons/:id",(req,res) => {
-    const selected_person = persons.find((person) => {
-        return person.id === Number(req.params.id);
+    puhelinluettelo.getPerson(req.params.id).then((result) => {
+        if(result.length > 0){
+            res.status(200).json(result);
+        }
+        else{
+            res.status(404).send();
+        }
+    }).catch((error) => {
+        res.status(500).send();
     });
-    if(selected_person){
-        res.status(200).json(selected_person);
-    }
-    else{
-        res.status(404).send();
-    }
 });
 
 app.get("/info",(req,res) => {
-    res.status(200).send(`Phonebook has info for ${persons.length} people.<br />${new Date().toString()}`);
+    puhelinluettelo.getAll().then((result) => {
+        // OK
+        res.status(200).send(`Phonebook has info for ${result.length} people.<br />${new Date().toString()}`);
+    }).catch((error) => {
+        // Virhe
+        console.error(error);
+        res.status(503).send();
+    });
 });
 
 // Numeron lisääminen
 app.post("/api/persons",(req,res) => {
     if(req.body.name && req.body.number){
-        if(!persons.find(person => person.name === req.body.name)){
-            persons.push({
-                name: req.body.name,
-                number: req.body.number,
-                id: Math.floor(Math.random() * 999999)
-            });
+        puhelinluettelo.saveNew(req.body.name,req.body.number).then((response) => {
+            // OK
             res.status(201).send();
-        }
-        else{
-            res.status(409).json({
-                error: "Name must be unique"
-            });
-        }
+        }).catch((error) => {
+            console.error(error);
+            res.status(500).send();
+        });
     }
     else{
         res.status(400).json({

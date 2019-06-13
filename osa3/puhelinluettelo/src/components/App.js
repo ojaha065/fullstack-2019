@@ -20,17 +20,6 @@ const App = () => {
         style: null
     });
 
-    // Alkutilan hakeminen
-    useEffect(() => {
-        phonebookService.getAll().then((response) => {
-            // OK
-            setPersons(response.data);
-        }).catch((error) => {
-            // Virhe
-            throw error;
-        });
-    },[]);
-
     const showNotification = (message,time,style) => {
         setNotificationSettings({
             message: message,
@@ -43,6 +32,17 @@ const App = () => {
             });
         },time * 1000);
     };
+
+    // Alkutilan hakeminen
+    useEffect(() => {
+        phonebookService.getAll().then((response) => {
+            // OK
+            setPersons(response.data);
+        }).catch((error) => {
+            // Virhe
+            showNotification("Error retrieving data",999,"failure");
+        });
+    },[]);
 
     const handleInputChange = (e) => {
         // Minusta on fiksumpaa, että on vain yksi muutoksenkäsittelijä input-kentille
