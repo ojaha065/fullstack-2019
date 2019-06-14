@@ -87,8 +87,8 @@ const App = () => {
                 }
             }).catch((error) => {
                 // Virhe
-                console.error(error);
-                showNotification(`Failed to add ${newPerson.name}. Error code ${error.status}`,5,"failure");
+                console.warn(error);
+                showNotification(error.response.data,8,"failure");
             });
         }
         else if(window.confirm("That person is already on the list. Do you want to replace the old number with the new one?")){
@@ -106,8 +106,8 @@ const App = () => {
                 setPersons(copy);
                 showNotification(`Modified ${newPerson.name}`,3,"success");
             }).catch((error) => {
-                console.error(error);
-                showNotification(`Failed to modify ${newPerson.name}`,5,"failure");
+                console.warn(error);
+                showNotification(error.response.data,8,"failure");
             });
         }
         //console.log(persons);

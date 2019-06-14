@@ -41,7 +41,7 @@ else{
         number: newNumber,
         id: Math.floor(Math.random() * 999999)
     });
-    person.save().then((response) => {
+    person.save().then(() => {
         // OK
         console.info(`Added ${newName} number ${newNumber} to phonebook`);
         mongoose.connection.close();

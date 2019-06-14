@@ -24,7 +24,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 // Morgan
-morgan.token("body",(req,res) => {
+morgan.token("body",(req) => {
     if(req.method === "POST"){
         return JSON.stringify(req.body);
     }
@@ -61,10 +61,17 @@ app.get("/info",(req,res,next) => {
 // Numeron lisääminen
 app.post("/api/persons",(req,res,next) => {
     if(req.body.name && req.body.number){
-        puhelinluettelo.saveNew(req.body.name,req.body.number).then((response) => {
+        puhelinluettelo.saveNew(req.body.name,req.body.number).then(() => {
             // OK
             res.status(201).send();
-        }).catch(error => next(error));
+        }).catch((error) => {
+            if(error.name === "ValidationError"){
+                res.status(400).send(error.message);
+            }
+            else{
+                next(error);
+            }
+        });
     }
     else{
         res.status(400).json({
@@ -99,7 +106,14 @@ app.put("/api/persons/:id",(req,res,next) => {
             else{
                 res.status(404).send();
             }
-        }).catch(error => next(error));
+        }).catch((error) => {
+            if(error.name === "ValidationError"){
+                res.status(400).send(error.message);
+            }
+            else{
+                next(error);
+            }
+        });
     }
     else{
         res.status(400).json({
@@ -115,13 +129,18 @@ app.use((req,res) => {
 });
 
 // Virheenkäsittelijä
-app.use((error,req,res,next) => {
-    console.error(error);
-    res.status(500).send();
-})
+app.use((error,req,res) => {
+    if(error.name === "CastError" && error.kind === "ObjectId"){
+        res.status(400).send("Virheellinen ID");
+    }
+    else{
+        console.error(error);
+        res.status(500).send();
+    }
+});
 
 // Käynnistetään palvelin
 const port = process.env.PORT || 8000;
 app.listen(port,() => {
-    console.info(`Palvelin kuuntelee porttia ${port}`);
+    console.info(`The server started listening port ${port}`);
 });

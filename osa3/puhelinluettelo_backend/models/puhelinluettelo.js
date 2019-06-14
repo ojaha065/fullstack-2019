@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const validator = require("mongoose-unique-validator");
 
 if(!process.env.MONGOPWD){
     throw "Missing db password";
@@ -14,9 +15,19 @@ mongoose.connect(connectionString,{
 });
 
 const PersonSchema = new mongoose.Schema({
-    name: String,
-    number: String
+    name: {
+        type: String,
+        required: true,
+        unique: true,
+        minlength: 3
+    },
+    number: {
+        type: String,
+        required: true,
+        minlength: 8
+    }
 });
+PersonSchema.plugin(validator);
 PersonSchema.set("toJSON",{
     transform: (document,returnedObject) => {
         returnedObject.id = returnedObject._id;
@@ -48,6 +59,9 @@ module.exports = {
     modifyPerson: (id,newNumber) => {
         return Person.findByIdAndUpdate(id,{
             number: newNumber
+        },{
+            runValidators: true,
+            useFindAndModify: false
         });
     }
 };
