@@ -5,7 +5,7 @@ import PersonForm from "./PersonForm";
 import Persons from "./Persons";
 import Notification from "./Notification";
 
-import phonebookService from "../phonebookService"
+import phonebookService from "../phonebookService";
 
 const App = () => {
     // Tilat

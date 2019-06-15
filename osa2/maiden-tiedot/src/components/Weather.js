@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const apiUrl = "https://api.apixu.com/v1/current.json";
-const apiKey = "[PUT HERE]";
+const apiKey = "PUT HERE";
 
 const Weather = ({city}) => {
     const [weather,setWeather] = useState(null);
