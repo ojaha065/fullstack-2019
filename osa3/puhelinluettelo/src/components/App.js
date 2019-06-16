@@ -107,7 +107,7 @@ const App = () => {
                 showNotification(`Modified ${newPerson.name}`,3,"success");
             }).catch((error) => {
                 console.warn(error);
-                showNotification(error.response.data,8,"failure");
+                showNotification(error.response.data || `Failed to modify ${newPerson.name}`,8,"failure");
             });
         }
         //console.log(persons);
