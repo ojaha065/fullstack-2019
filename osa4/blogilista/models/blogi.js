@@ -5,7 +5,8 @@ const mongoose = require("mongoose");
 if(!process.env.MONGOPWD){
     throw "Missing db password";
 }
-const dbUrl = `mongodb+srv://puhelinluettelo:${process.env.MONGOPWD}@cluster0-rcbjk.mongodb.net/bloglist?retryWrites=true&w=majority`;
+
+const dbUrl = `mongodb+srv://puhelinluettelo:${process.env.MONGOPWD}@cluster0-rcbjk.mongodb.net/${(process.env.NODE_ENV === "test") ? "bloglist-test" : "bloglist"}?retryWrites=true&w=majority`;
 
 const blogSchema = mongoose.Schema({
     title: String,
@@ -20,6 +21,7 @@ mongoose.connect(dbUrl,{
 });
 
 module.exports = {
+    Blog: Blog,
     findAll: () => {
         return Blog.find({});
     },
