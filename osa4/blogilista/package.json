@@ -1,0 +1,28 @@
+{
+  "name": "blogilista",
+  "version": "1.0.0",
+  "description": "Fullstack Open 2019",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ojaha065/fullstack-2019.git"
+  },
+  "keywords": [
+    "osa4"
+  ],
+  "author": "Jani Haiko",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.6.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.0.0",
+    "nodemon": "^1.19.1"
+  }
+}
