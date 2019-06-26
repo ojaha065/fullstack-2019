@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
+mongoose.set("useFindAndModify",false);
 
 if(!process.env.MONGOPWD){
     throw "Missing db password";
@@ -14,6 +15,14 @@ const blogSchema = mongoose.Schema({
     url: String,
     likes: Number
 });
+blogSchema.set("toJSON",{
+    transform: (document,returnedObject) => {
+        returnedObject.id = returnedObject._id;
+        delete returnedObject._id;
+        delete returnedObject.__v;
+    }
+});
+
 const Blog = mongoose.model("Blog",blogSchema);
 
 mongoose.connect(dbUrl,{
@@ -28,5 +37,17 @@ module.exports = {
     saveNew: (body) => {
         const newBlog = new Blog(body);
         return newBlog.save();
+    },
+    deleteBlog: (id) => {
+        return Blog.findByIdAndDelete(id);
+    },
+    modifyBlog: (id,body) => {
+        const newBlog = new Blog(body);
+        return Blog.findByIdAndUpdate(id,{
+            title: body.title,
+            author: body.author,
+            url: body.url,
+            likes: body.likes
+        });
     }
 };
