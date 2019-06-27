@@ -8,6 +8,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const passwordHelper = require("./utils/password_helper.js");
+
+const user = require("./models/user.js");
 const blogi = require("./models/blogi.js");
 
 const app = express();
@@ -28,6 +31,15 @@ app.get("/api/blogs",async (req,res,next) => {
         next(error);
     }
 });
+app.get("/api/users",async (req,res,next) => {
+    try{
+        const allUsers = await user.findAll();
+        res.status(200).json(allUsers);
+    }
+    catch(error){
+        next(error);
+    }
+});
 
 app.post("/api/blogs",async (req,res,next) => {
     //console.log(req.body);
@@ -40,12 +52,57 @@ app.post("/api/blogs",async (req,res,next) => {
         }
 
         try{
+            // Blogin lisääjä
+            const allUsers = await user.findAll();
+            const blogAdderID = allUsers[Math.floor(Math.random() * (allUsers.length - 1))].id;
+            req.body.user = blogAdderID;
+
             const response = await blogi.saveNew(req.body);
+            await user.addNewBlogToUser(blogAdderID,response.id);
+
             res.status(201).json(response);
         }
         catch(error){
             next(error);
         }
+    }
+});
+app.post("/api/users",async (req,res,next) => {
+    if(!req.body || !req.body.username || !req.body.password){
+        res.status(400).json({
+            error: "Required field missing"
+        });
+    }
+    else if(req.body.username.length > 3 && req.body.password.length > 3){        
+        try{
+            // Validointi
+            const allUsers = await user.findAll();
+            let usernameIsUnique = true;
+            allUsers.forEach((user) => {
+                if(user.username === req.body.username){
+                    usernameIsUnique = false;
+                }
+            });
+
+            if(usernameIsUnique){
+                req.body.password = passwordHelper.encryptPassword(req.body.password);
+                await user.addNew(req.body);
+                res.status(201).send();
+            }
+            else{
+                res.status(400).json({
+                    error: "Username is not unique"
+                });
+            }
+        }
+        catch(error){
+            next(error);
+        }
+    }
+    else{
+        res.status(400).json({
+            error: "Username and/or password is not long enough"
+        });
     }
 });
 
@@ -89,7 +146,7 @@ app.use((error,req,res,next) => {
     }
 });
 
-const port = process.env.NODE_ENV === "test" ? Number(process.env.PORT) + 1 : process.env.PORT;
+const port = process.env.NODE_ENV === "test" ? Number(process.env.PORT) + Math.floor(Math.random() * 200) : process.env.PORT;
 app.listen(port,() => {
     if(process.env.NODE_ENV !== "test"){
         console.info(`Palvelin kuuntelee porttia ${port}`);

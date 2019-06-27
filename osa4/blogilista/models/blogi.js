@@ -13,7 +13,11 @@ const blogSchema = mongoose.Schema({
     title: String,
     author: String,
     url: String,
-    likes: Number
+    likes: Number,
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }
 });
 blogSchema.set("toJSON",{
     transform: (document,returnedObject) => {
@@ -32,7 +36,11 @@ mongoose.connect(dbUrl,{
 module.exports = {
     Blog: Blog,
     findAll: () => {
-        return Blog.find({});
+        return Blog.find({}).populate("user",{
+            username: true,
+            name: true,
+            id: true
+        });
     },
     saveNew: (body) => {
         const newBlog = new Blog(body);
