@@ -1,6 +1,6 @@
 "use strict";
 
-if(!process.env.MONGOPWD || !process.env.PORT){
+if(!process.env.MONGOPWD || !process.env.PORT || !process.env.TOKENSECRET){
     require("dotenv").config();
 }
 
@@ -14,6 +14,14 @@ const user = require("./models/user.js");
 const blogi = require("./models/blogi.js");
 
 const app = express();
+
+app.use((req,res,next) => {
+    const auth = req.get("authorization");
+    if(auth && auth.toLowerCase().startsWith("bearer")){
+        req.token = auth.substring(7);
+    }
+    return next();
+});
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -43,28 +51,41 @@ app.get("/api/users",async (req,res,next) => {
 
 app.post("/api/blogs",async (req,res,next) => {
     //console.log(req.body);
-    if(!req.body || !req.body.title || !req.body.url){
-        res.status(400).send();
+    //console.log(req.token);
+
+    if(req.token){
+        const loginToken = passwordHelper.decryptToken(req.token);
+        if(loginToken === -1){
+            res.status(401).json({
+                error: "Invalid token"
+            });
+        }
+        else{
+            if(!req.body || !req.body.title || !req.body.url){
+                res.status(400).send();
+            }
+            else{
+                if(!req.body.likes){
+                    req.body.likes = 0;
+                }
+        
+                try{
+                    req.body.user = loginToken.id;     
+                    const response = await blogi.saveNew(req.body);
+                    await user.addNewBlogToUser(loginToken.id,response.id);
+        
+                    res.status(201).json(response);
+                }
+                catch(error){
+                    next(error);
+                }
+            }
+        }
     }
     else{
-        if(!req.body.likes){
-            req.body.likes = 0;
-        }
-
-        try{
-            // Blogin lisääjä
-            const allUsers = await user.findAll();
-            const blogAdderID = allUsers[Math.floor(Math.random() * (allUsers.length - 1))].id;
-            req.body.user = blogAdderID;
-
-            const response = await blogi.saveNew(req.body);
-            await user.addNewBlogToUser(blogAdderID,response.id);
-
-            res.status(201).json(response);
-        }
-        catch(error){
-            next(error);
-        }
+        res.status(401).json({
+            error: "Missing token"
+        });
     }
 });
 app.post("/api/users",async (req,res,next) => {
@@ -105,14 +126,60 @@ app.post("/api/users",async (req,res,next) => {
         });
     }
 });
+app.post("/api/login",async (req,res) => {
+    if(req.body && req.body.username && req.body.password){
+        const loginResult = await passwordHelper.login(req.body.username,req.body.password);
+
+        if(loginResult.status === 1){
+            res.status(200).json({
+                token: loginResult.token,
+                username: loginResult.username,
+                name: loginResult.name || ""
+            });
+        }
+        else{
+            res.status(401).send();
+        }
+    }
+    else{
+        res.status(400).send();
+    }
+});
 
 app.delete("/api/blogs/:id",async (req,res,next) => {
-    try{
-        await blogi.deleteBlog(req.params.id);
-        res.status(205).send();
+    if(req.token){
+        const loginToken = passwordHelper.decryptToken(req.token);
+        if(loginToken === -1){
+            res.status(401).json({
+                error: "Invalid token"
+            });
+        }
+        else{
+            try{
+                const result = await blogi.deleteBlog(req.params.id,loginToken.id);
+                if(result === -1){
+                    res.status(401).json({
+                        error: "You are not authorized to remove this blog"
+                    });
+                }
+                else if(result === -2){
+                    res.status(400).json({
+                        error: "Invalid ID"
+                    });
+                }
+                else{
+                    res.status(205).send();
+                }
+            }
+            catch(error){
+                next(error);
+            }
+        }
     }
-    catch(error){
-        next(error);
+    else{
+        res.status(401).json({
+            error: "Missing token"
+        });
     }
 });
 

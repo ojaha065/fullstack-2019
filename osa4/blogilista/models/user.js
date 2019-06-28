@@ -52,5 +52,10 @@ module.exports = {
               blogs: blogID
           }  
         });
+    },
+    getUserInfo: (username) => {
+        return User.find({
+            username: username
+        });
     }
 };

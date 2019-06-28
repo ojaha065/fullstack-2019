@@ -46,8 +46,20 @@ module.exports = {
         const newBlog = new Blog(body);
         return newBlog.save();
     },
-    deleteBlog: (id) => {
-        return Blog.findByIdAndDelete(id);
+    deleteBlog: async (id,userId) => {
+        let blog;
+        try{
+            blog = await Blog.findById(id);
+        }
+        catch(error){
+            return -2;
+        }
+        if(blog && blog.user && blog.user.toString() === userId){
+            return Blog.findByIdAndDelete(id);
+        }
+        else{
+            return -1;
+        }
     },
     modifyBlog: (id,body) => {
         const newBlog = new Blog(body);
