@@ -47,7 +47,7 @@ const newBlog = {
 };
 
 // Pakollisen autentikoinnin lisäämisen jälkeen
-// korjasin osan testeistä kirjautumista, mutta
+// korjasin osan testeistä käyttämään kirjautumista, mutta
 // en kaikkia, koska testien korjaamista
 // ei vaadittu tehtävissä.
 const login = {

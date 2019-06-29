@@ -62,22 +62,33 @@ app.post("/api/blogs",async (req,res,next) => {
         }
         else{
             if(!req.body || !req.body.title || !req.body.url){
-                res.status(400).send();
+                res.status(400).json({
+                    error: "Required field missing"
+                });
             }
             else{
                 if(!req.body.likes){
                     req.body.likes = 0;
                 }
-        
-                try{
-                    req.body.user = loginToken.id;     
-                    const response = await blogi.saveNew(req.body);
-                    await user.addNewBlogToUser(loginToken.id,response.id);
-        
-                    res.status(201).json(response);
+
+                // Korjataan kaatuminen, jos lähettää muuta kuin numeron
+                req.body.likes = Number(req.body.likes);
+                if(isNaN(req.body.likes)){
+                    res.status(400).json({
+                        error: "Invalid value"
+                    });
                 }
-                catch(error){
-                    next(error);
+                else{
+                    try{
+                        req.body.user = loginToken.id;     
+                        const response = await blogi.saveNew(req.body);
+                        await user.addNewBlogToUser(loginToken.id,response.id);
+            
+                        res.status(201).json(response);
+                    }
+                    catch(error){
+                        next(error);
+                    }
                 }
             }
         }
@@ -163,7 +174,7 @@ app.delete("/api/blogs/:id",async (req,res,next) => {
                     });
                 }
                 else if(result === -2){
-                    res.status(400).json({
+                    res.status(404).json({
                         error: "Invalid ID"
                     });
                 }
@@ -184,20 +195,34 @@ app.delete("/api/blogs/:id",async (req,res,next) => {
 });
 
 app.put("/api/blogs/:id",async (req,res,next) => {
+    // Toki tämäkin reitti pitäisi päivittää vaatimaan autentikointia.
+    // Sitä ei vaadittu tehtävissä, joten ajan säästämiseksi jätin sen tekemättä
+
     if(!req.body || !req.body.title || !req.body.url){
-        res.status(400).send();
+        res.status(400).json({
+            error: "Required field missing"
+        });
     }
     else{
         if(!req.body.likes){
             req.body.likes = 0;
         }
 
-        try{
-            await blogi.modifyBlog(req.params.id,req.body);
-            res.status(205).send();
+        // Korjataan kaatuminen, jos lähettää muuta kuin numeron
+        req.body.likes = Number(req.body.likes);
+        if(isNaN(req.body.likes)){
+            res.status(400).json({
+                error: "Invalid value"
+            });
         }
-        catch(error){
-            next(error);
+        else{
+            try{
+                await blogi.modifyBlog(req.params.id,req.body);
+                res.status(205).send();
+            }
+            catch(error){
+                next(error);
+            }
         }
     }
 });
@@ -205,7 +230,9 @@ app.put("/api/blogs/:id",async (req,res,next) => {
 // Virheenkäsittelijä
 app.use((error,req,res,next) => {
     if(error.name === "CastError" && error.kind === "ObjectId"){
-        res.status(404).send("Virheellinen ID");
+        res.status(404).json({
+            error: "Invalid ID"
+        });
     }
     else{
         console.error(error);
@@ -213,11 +240,11 @@ app.use((error,req,res,next) => {
     }
 });
 
-const port = process.env.NODE_ENV === "test" ? Number(process.env.PORT) + Math.floor(Math.random() * 200) : process.env.PORT;
-app.listen(port,() => {
-    if(process.env.NODE_ENV !== "test"){
+if(process.env.NODE_ENV !== "test"){
+    const port = process.env.PORT;
+    app.listen(port,() => {
         console.info(`Palvelin kuuntelee porttia ${port}`);
-    }
-});
+    });
+}
 
 module.exports = app;

@@ -30,7 +30,7 @@ module.exports = {
                 name: null
             };
         }
-        if(crypto.createHash("sha512").update(password).digest("hex") === userInfo.password){
+        if(userInfo && crypto.createHash("sha512").update(password).digest("hex") === userInfo.password){
             // Oikea salasana
             const loginTokenData = {
                 username: userInfo.username,

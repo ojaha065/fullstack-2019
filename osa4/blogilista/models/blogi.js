@@ -62,7 +62,6 @@ module.exports = {
         }
     },
     modifyBlog: (id,body) => {
-        const newBlog = new Blog(body);
         return Blog.findByIdAndUpdate(id,{
             title: body.title,
             author: body.author,
