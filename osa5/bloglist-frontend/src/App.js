@@ -6,6 +6,9 @@ import blogsService from "./services/blogs";
 import Blog from "./components/Blog";
 
 import LoggedInUserInfo from "./components/LoggedInUserInfo";
+import UusiBlogi from "./components/UusiBlogi";
+
+import Notification from "./components/Notification";
 
 function App() {
   const [user,setUser] = useState(null);
@@ -13,6 +16,11 @@ function App() {
 
   const [username,setUsername] = useState("");
   const [password,setPassword] = useState("");
+
+  const [notificationSettings,setNotificationSettings] = useState({
+    message: null,
+    style: null
+  });
 
   useEffect(() => {
     if(user){
@@ -37,6 +45,19 @@ function App() {
       }
     }
   },[user]);
+
+  const showNotification = (message,time,style) => {
+    setNotificationSettings({
+        message: message,
+        style: style
+    });
+    setTimeout(() => {
+        setNotificationSettings({
+            message: null,
+            style: null
+        });
+    },time * 1000);
+  };
 
   const handleInputChnage = (e) => {
     switch(e.target.id){
@@ -73,14 +94,15 @@ function App() {
         setUser(thisUser);
       }
       else{
-        alert("Login failed. No response data received.");
+        //alert("Login failed. No response data received.");
+        showNotification("Login failed. Try again later.",5,"failure");
       }
     }).catch((error) => {
       if(error.response.status === 401){
-        alert("Wrong username or password");
+        showNotification("Wrong username or password",5,"failure");
       }
       else{
-        alert(`Login failed. Status code ${error.response.status}`);
+        showNotification("Login failed. Try again later.",5,"failure");
         console.error(error);
       }
     });
@@ -91,7 +113,11 @@ function App() {
       <div>
         <h1>Blogs</h1>
 
+        <Notification notificationSettings={notificationSettings} />
+        <br />
         <LoggedInUserInfo user={user} setUser={setUser} />
+
+        <UusiBlogi blogs={blogs} setBlogs={setBlogs} token={user.token} showNotification={showNotification} />
 
         {
           blogs.map((blog) => {
@@ -105,6 +131,9 @@ function App() {
     return (
       <div>
         <h1>Please log in</h1>
+
+        <Notification notificationSettings={notificationSettings} />
+        <br />
         <form onSubmit={handleLogin}>
           <label htmlFor="username">Username</label>
           <input type="text" id="username" minLength="3" required onChange={handleInputChnage} />
