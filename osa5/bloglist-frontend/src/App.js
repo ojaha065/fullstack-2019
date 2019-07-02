@@ -9,6 +9,7 @@ import LoggedInUserInfo from "./components/LoggedInUserInfo";
 import UusiBlogi from "./components/UusiBlogi";
 
 import Notification from "./components/Notification";
+import Togglable from "./components/Togglable";
 
 function App() {
   const [user,setUser] = useState(null);
@@ -98,7 +99,7 @@ function App() {
         showNotification("Login failed. Try again later.",5,"failure");
       }
     }).catch((error) => {
-      if(error.response.status === 401){
+      if(error.response && error.response.status === 401){
         showNotification("Wrong username or password",5,"failure");
       }
       else{
@@ -109,6 +110,12 @@ function App() {
   };
 
   if(user){
+    if(blogs.length > 0){
+      blogs.sort((a,b) => {
+        return b.likes > a.likes;
+      });
+    }
+
     return (
       <div>
         <h1>Blogs</h1>
@@ -117,11 +124,13 @@ function App() {
         <br />
         <LoggedInUserInfo user={user} setUser={setUser} />
 
-        <UusiBlogi blogs={blogs} setBlogs={setBlogs} token={user.token} showNotification={showNotification} />
+        <Togglable buttonLabel="Add new blog">
+          <UusiBlogi blogs={blogs} setBlogs={setBlogs} token={user.token} showNotification={showNotification} />
+        </Togglable>
 
         {
           blogs.map((blog) => {
-            return <Blog key={blog.id} blog={blog} />
+            return <Blog key={blog.id} blog={blog} showNotification={showNotification} activeUser={user} />
           })
         }
       </div>

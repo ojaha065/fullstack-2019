@@ -12,5 +12,17 @@ const addNew = (newBlog,token) => {
     }
   });
 };
+const like = (id,blog) => {
+  const newBlogObject = {...blog};
+  newBlogObject.likes++;
+  return axios.put(`${baseUrl}/${id}`,newBlogObject);
+};
+const remove = (id,token) => {
+  return axios.delete(`${baseUrl}/${id}`,{
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+};
 
-export default { getAll, addNew };
+export default { getAll, addNew, like, remove };
