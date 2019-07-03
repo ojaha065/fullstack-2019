@@ -1,4 +1,5 @@
 import React from "react";
+import propTypes from "prop-types";
 
 const Notification = ({notificationSettings}) => {
     const styles = {
@@ -15,6 +16,12 @@ const Notification = ({notificationSettings}) => {
     else{
         return (<div></div>);
     }
+};
+Notification.propTypes = {
+    notificationSettings: propTypes.exact({
+        style: propTypes.string,
+        message: propTypes.string
+    }).isRequired
 };
 
 export default Notification;

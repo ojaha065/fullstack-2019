@@ -130,7 +130,7 @@ function App() {
 
         {
           blogs.map((blog) => {
-            return <Blog key={blog.id} blog={blog} showNotification={showNotification} activeUser={user} />
+            return (<Blog key={blog.id} blog={blog} showNotification={showNotification} activeUser={user} />);
           })
         }
       </div>

@@ -22,7 +22,7 @@ const remove = (id,token) => {
     headers: {
       Authorization: `Bearer ${token}`
     }
-  })
+  });
 };
 
 export default { getAll, addNew, like, remove };

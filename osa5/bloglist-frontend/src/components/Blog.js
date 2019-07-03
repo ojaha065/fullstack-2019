@@ -43,17 +43,16 @@ const Blog = (props) => {
 
   return (
     <div style={styles}>
-      <span style={{cursor: "pointer"}} onClick={() => setShowFullInfo(!showFullInfo)}>
+      <span data-testid="showFullInfo" style={{cursor: "pointer"}} onClick={() => setShowFullInfo(!showFullInfo)}>
         {props.blog.title} by <b>{props.blog.author || "unknown"}</b>
       </span>
-  
-      <div style={hideWhenNeeded}>
+      <div data-testid="fullInfo" style={hideWhenNeeded}>
         <br />
         <a href={props.blog.url} target="_blank" rel="noopener noreferrer">{props.blog.url}</a>
         <br />
         {(likedThis) ? ++props.blog.likes : props.blog.likes} likes <button type="button" onClick={like} disabled={likedThis}>Like this</button>
         <br />
-        This blog was added by {props.blog.user.name || props.blog.user.username || "you"}
+        This blog was added by {(props.blog.user) ? props.blog.user.name || props.blog.user.username || "you" : "you"}
         <button style={(props.activeUser.username === props.blog.user.username) ? {} : {display: "none"}} type="button" onClick={remove}>Remove blog</button>
       </div>
     </div>
