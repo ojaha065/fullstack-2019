@@ -27,6 +27,7 @@ function App() {
     if(user){
       blogsService.getAll().then((response) => {
         // OK
+        //console.log(response);
         setBlogs(response.data || []);
       }).catch((error) => {
         // Virhe
@@ -35,8 +36,8 @@ function App() {
       });
     }
     else{
-      if(localStorage){
-        const savedLogin = localStorage.getItem("user");
+      if(window.localStorage){
+        const savedLogin = window.localStorage.getItem("user");
         if(savedLogin){
           setUser(JSON.parse(savedLogin));
         }
@@ -84,8 +85,8 @@ function App() {
           name: response.data.name || null
         };
 
-        if(localStorage){
-          localStorage.setItem("user",JSON.stringify(thisUser));
+        if(window.localStorage){
+          window.localStorage.setItem("user",JSON.stringify(thisUser));
         }
         else{
           console.info("This browser does not support local storage");
