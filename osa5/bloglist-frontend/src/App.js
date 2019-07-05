@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { useField } from "./hooks";
+
 import usersService from "./services/users";
 
 import blogsService from "./services/blogs";
@@ -15,13 +17,13 @@ function App() {
   const [user,setUser] = useState(null);
   const [blogs,setBlogs] = useState([]);
 
-  const [username,setUsername] = useState("");
-  const [password,setPassword] = useState("");
-
   const [notificationSettings,setNotificationSettings] = useState({
     message: null,
     style: null
   });
+
+  const usernameField = useField("text","username",true);
+  const passwordField = useField("password","password",false);
 
   useEffect(() => {
     if(user){
@@ -61,23 +63,11 @@ function App() {
     },time * 1000);
   };
 
-  const handleInputChnage = (e) => {
-    switch(e.target.id){
-      case "username":
-        setUsername(e.target.value);
-        break;
-      case "password":
-        setPassword(e.target.value);
-        break;
-      default:
-        console.error("Jokin meni nyt pieleen.");
-    }
-  };
-
   const handleLogin = (e) => {
     e.preventDefault();
+    passwordField.reset();
 
-    usersService.login(username,password).then((response) => {
+    usersService.login(usernameField.fieldData.value,passwordField.fieldData.value).then((response) => {
       if(response.data){
         const thisUser = {
           token: response.data.token,
@@ -146,10 +136,10 @@ function App() {
         <br />
         <form onSubmit={handleLogin}>
           <label htmlFor="username">Username</label>
-          <input type="text" id="username" minLength="3" required onChange={handleInputChnage} />
+          <input {...usernameField.fieldData} />
           <br />
           <label htmlFor="password">Password</label>
-          <input type="password" id="password" required onChange={handleInputChnage} />
+          <input {...passwordField.fieldData} />
           <br />
           <button type="submit">Login</button>
         </form>

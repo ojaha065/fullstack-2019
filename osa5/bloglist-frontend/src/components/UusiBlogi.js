@@ -1,45 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
+
+import { useField } from "../hooks";
 
 import blogsService from "../services/blogs";
 
 const UusiBlogi = (props) => {
-    const [newBlog,setNewBlog] = useState({
-        title: null,
-        author: null,
-        url: null
-    });
-
-    const handleInputChange = (e) => {
-        switch(e.target.id){
-            case "title":
-                setNewBlog({
-                    title: e.target.value,
-                    author: newBlog.author,
-                    url: newBlog.url
-                });
-                break;
-            case "author":
-                setNewBlog({
-                    title: newBlog.title,
-                    author: e.target.value,
-                    url: newBlog.url
-                });
-                break;
-            case "url":
-                setNewBlog({
-                    title: newBlog.title,
-                    author: newBlog.author,
-                    url: e.target.value
-                });
-                break;
-            default:
-                console.error("Jokin meni nyt pieleen.");
-        }
-    };
+    const titleField = useField("text","title",true);
+    const authorField = useField("text","author",false);
+    const urlField = useField("url","url",true);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        const newBlog = {
+            title: titleField.fieldData.value,
+            author: authorField.fieldData.value,
+            url: urlField.fieldData.value
+        };
         blogsService.addNew(newBlog,props.token).then((response) => {
             // OK
             props.setBlogs(props.blogs.concat(response.data));
@@ -56,13 +33,13 @@ const UusiBlogi = (props) => {
             <h2>Create new</h2>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="title">Title:</label>
-                <input type="text" id="title" required onChange={handleInputChange} />
+                <input {...titleField.fieldData} />
                 <br />
                 <label htmlFor="author">Author:</label>
-                <input type="text" id="author" onChange={handleInputChange} />
+                <input {...authorField.fieldData} />
                 <br />
                 <label htmlFor="url">Url:</label>
-                <input type="url" id="url" required onChange={handleInputChange} />
+                <input {...urlField.fieldData} />
                 <br />
                 <button type="submit">Create</button>
             </form>

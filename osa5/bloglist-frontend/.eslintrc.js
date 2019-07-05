@@ -21,7 +21,8 @@ module.exports = {
 	},
 	"plugins": [
 		"react",
-		"jest"
+		"jest",
+		"react-hooks"
 	],
 	"settings": {
 		"react": {
@@ -39,6 +40,7 @@ module.exports = {
 		],
 		"eqeqeq": "warn",
 		"no-trailing-spaces": "warn",
+		"no-unused-vars": "warn",
 		"arrow-spacing": [
 			"error",
 			{
@@ -47,6 +49,7 @@ module.exports = {
 			}
 		],
 		"no-console": 0,
-		"react/prop-types": 0
+		"react/prop-types": 0,
+		"react-hooks/rules-of-hooks": "error"
 	}
 };
