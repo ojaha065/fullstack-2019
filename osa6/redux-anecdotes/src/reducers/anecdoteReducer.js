@@ -26,7 +26,7 @@ const orderAnecdotes = (anecdotes) => {
 let initialState = anecdotesAtStart.map(asObject);
 initialState = orderAnecdotes(initialState);
 
-const reducer = (state = initialState, action) => {
+const anecdoteReducer = (state = initialState, action) => {
   let newState = [...state];
 
   switch(action.type){
@@ -70,4 +70,4 @@ export const addVote = (id) => {
   };
 };
 
-export default reducer;
+export default anecdoteReducer;

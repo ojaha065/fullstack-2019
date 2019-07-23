@@ -1,18 +1,28 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import { addVote } from "../reducers/anecdoteReducer";
+import { setNotification, clearNotification } from "../reducers/notificationReducer";
 
-const AnecdoteList = ({store}) => {
+const AnecdoteList = (props) => {
+    const vote = (id,anecdote) => {
+        props.addVote(id);
+        props.setNotification(`You voted for "${anecdote}"`);
+        setTimeout(() => {
+            props.clearNotification();
+        },5000);
+    };
+
     return (
         <div>
-            {store.getState().map(anecdote =>
+            {props.anecdotes.map(anecdote =>
                 <div key={anecdote.id}>
                     <div>
                         {anecdote.content}
                     </div>
                     <div>
                         has {anecdote.votes}
-                        <button onClick={() => store.dispatch(addVote(anecdote.id))}>vote</button>
+                        <button onClick={() => vote(anecdote.id,anecdote.content)}>vote</button>
                     </div>
                 </div>
             )}
@@ -20,4 +30,16 @@ const AnecdoteList = ({store}) => {
     );
 };
 
-export default AnecdoteList;
+const mapStateToProps = (state) => {
+    return {
+        anecdotes: state.anecdotes,
+        notification: state.notification
+    };
+};
+const mapDispatchToProps = {
+    addVote,
+    setNotification,
+    clearNotification
+};
+const ConnectedAnecdoteList = connect(mapStateToProps,mapDispatchToProps)(AnecdoteList);
+export default ConnectedAnecdoteList;
