@@ -7,9 +7,8 @@ import { setNotification, clearNotification } from "../reducers/notificationRedu
 const AnecdoteForm = (props) => {
     const formSubmit = (e) => {
         e.preventDefault();
-
         props.addNew(e.target.anecdote.value);
-        props.setNotification("New anecdote added");
+        props.setNotification("New anecdote added!");
         setTimeout(() => {
             props.clearNotification();
         },5000);
@@ -26,13 +25,10 @@ const AnecdoteForm = (props) => {
     );
 };
 
-const mapStateToProps = (state) => {
-    return {};
-};
 const mapDispatchToProps = {
     addNew,
     setNotification,
     clearNotification
 };
-const ConnectedAnecdoteList = connect(mapStateToProps,mapDispatchToProps)(AnecdoteForm);
+const ConnectedAnecdoteList = connect(null,mapDispatchToProps)(AnecdoteForm);
 export default ConnectedAnecdoteList;
