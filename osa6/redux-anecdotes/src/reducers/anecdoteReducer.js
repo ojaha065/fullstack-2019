@@ -54,11 +54,15 @@ export const addNew = (content) => {
   };
 };
 export const addVote = (id) => {
-  return {
-    type: "ADD_VOTE",
-    data: {
-      id: id
-    }
+  return dispatch => {
+    // Tässä toimintojen tapahtumisjärjestyksellä ei ole väliä
+    anecdoteService.saveVote(id);
+    dispatch({
+      type: "ADD_VOTE",
+      data: {
+        id: id
+      }
+    });
   };
 };
 export const initAnecdotes = () => {
