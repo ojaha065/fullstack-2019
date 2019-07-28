@@ -18,7 +18,7 @@ const AnecdoteList = (props) => {
                         {anecdote.content}
                     </div>
                     <div>
-                        has {anecdote.votes}
+                        has {anecdote.votes} votes
                         <button onClick={() => vote(anecdote.id,anecdote.content)}>vote</button>
                     </div>
                 </div>
