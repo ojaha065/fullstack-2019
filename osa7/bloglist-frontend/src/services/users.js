@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseUrl = "/api";
+const baseUrl = "http://localhost:8000/api";
 
 const login = (username,password) => {
     return axios.post(`${baseUrl}/login`,{
